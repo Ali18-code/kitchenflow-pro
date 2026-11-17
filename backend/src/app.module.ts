@@ -4,6 +4,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { DatabaseModule } from './database/database.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
+import { TablesModule } from './tables/tables.module';
+import { MenuModule } from './menu/menu.module';
+import { StationsModule } from './stations/stations.module';
+import { OrdersModule } from './orders/orders.module';
 
 // Entities
 import { User } from './users/user.entity';
@@ -44,6 +48,10 @@ import { RestaurantSetting } from './settings/setting.entity';
     ]),
     AuthModule,
     UsersModule,
+    TablesModule,
+    MenuModule,
+    StationsModule,
+    OrdersModule,
   ],
   controllers: [],
   providers: [],

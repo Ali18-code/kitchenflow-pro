@@ -6,6 +6,7 @@ import LoginPage from './features/auth/LoginPage';
 import TablesPage from './features/tables/TablesPage';
 import PosPage from './features/pos/PosPage';
 import OrdersPage from './features/orders/OrdersPage';
+import StaffPage from './features/staff/StaffPage';
 import {
   LayoutDashboard,
   Grid,
@@ -19,6 +20,7 @@ import {
   LogOut,
   UtensilsCrossed,
   User,
+  Users,
 } from 'lucide-react';
 
 function LandingPage() {
@@ -83,6 +85,7 @@ function AppShell({ children }) {
     { label: 'Kitchen Display', path: '/app/kitchen', icon: ChefHat, roles: ['manager', 'kitchen'] },
     { label: 'Rush Predictor', path: '/app/rush', icon: Zap, roles: ['manager'] },
     { label: 'Menu Catalog', path: '/app/menu', icon: BookOpen, roles: ['manager'] },
+    { label: 'Staff Management', path: '/app/staff', icon: Users, roles: ['manager'] },
     { label: 'Inventory', path: '/app/inventory', icon: Boxes, roles: ['manager'] },
     { label: 'Billing', path: '/app/billing', icon: Receipt, roles: ['manager', 'cashier'] },
     { label: 'Reports', path: '/app/reports', icon: BarChart3, roles: ['manager'] },
@@ -258,6 +261,14 @@ export default function App() {
             element={
               <AppShell>
                 <OrdersPage />
+              </AppShell>
+            }
+          />
+          <Route
+            path="/app/staff"
+            element={
+              <AppShell>
+                <StaffPage />
               </AppShell>
             }
           />

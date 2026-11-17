@@ -1,0 +1,13 @@
+:root {
+  --kf-ink: #1B2330;
+  --kf-panel: #263141;
+  --kf-orange: #F58237;
+  --kf-orange-soft: #FFF0E5;
+  --kf-canvas: #FAF8F4;
+  --kf-border: #DDE2E7;
+  --kf-muted: #586475;
+  --kf-success: #168879;
+  --kf-danger: #B34642;
+  --kf-radius: 14px;
+  --kf-space: 8px;
+}

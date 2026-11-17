@@ -7,6 +7,7 @@ import TablesPage from './features/tables/TablesPage';
 import PosPage from './features/pos/PosPage';
 import OrdersPage from './features/orders/OrdersPage';
 import StaffPage from './features/staff/StaffPage';
+import ThreeDCanvas from './components/ThreeDCanvas';
 import {
   LayoutDashboard,
   Grid,
@@ -26,41 +27,191 @@ import {
 function LandingPage() {
   const navigate = useNavigate();
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: 'var(--kf-canvas)' }}>
-      {/* Navbar */}
-      <nav className="navbar navbar-expand-lg px-4 py-3" style={{ backgroundColor: 'var(--kf-panel)' }}>
-        <div className="container-fluid">
+    <div style={{ minHeight: '100vh', backgroundColor: 'var(--kf-canvas)', overflowX: 'hidden' }}>
+      {/* Navbar with Glassmorphism */}
+      <nav
+        className="navbar navbar-expand-lg px-4 py-3 sticky-top"
+        style={{
+          backgroundColor: 'rgba(27, 35, 48, 0.95)',
+          backdropFilter: 'blur(10px)',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+        }}
+      >
+        <div className="container-fluid max-w-7xl">
           <Link className="navbar-brand text-white fw-bold d-flex align-items-center gap-2" to="/">
-            <UtensilsCrossed size={22} color="var(--kf-orange)" />
-            <span>KitchenFlow <span style={{ color: 'var(--kf-orange)' }}>Pro</span></span>
+            <div
+              className="p-2 rounded-3 d-flex align-items-center justify-content-center"
+              style={{ backgroundColor: 'var(--kf-orange)' }}
+            >
+              <UtensilsCrossed size={18} color="#fff" />
+            </div>
+            <span className="fs-5">
+              KitchenFlow <span style={{ color: 'var(--kf-orange)' }}>Pro</span>
+            </span>
           </Link>
           <div className="d-flex align-items-center gap-3">
-            <Link to="/login" className="btn btn-kf-primary">Staff Portal</Link>
+            <Link to="/login" className="btn btn-kf-primary">
+              Enter Staff Workspace
+            </Link>
           </div>
         </div>
       </nav>
 
-      {/* Hero */}
-      <div className="container text-center py-5 my-5">
-        <span
-          className="badge px-3 py-2 mb-3"
-          style={{ backgroundColor: 'var(--kf-orange-soft)', color: 'var(--kf-orange)', fontSize: '13px' }}
-        >
-          Semester Build Blueprint &bull; Full-Stack Platform
-        </span>
-        <h1 className="display-4 fw-bold mb-3" style={{ color: 'var(--kf-ink)' }}>
-          Modern Restaurant Operations & Kitchen Intelligence
-        </h1>
-        <p className="lead text-muted mx-auto" style={{ maxWidth: '680px' }}>
-          Connect dine-in ordering, preparation stations, real-time table occupancy, and cash billing with our distinctive <strong>Kitchen Rush Predictor</strong>.
-        </p>
-        <div className="d-flex justify-content-center gap-3 mt-4">
-          <button onClick={() => navigate('/login')} className="btn btn-kf-primary btn-lg px-4">
-            Enter Workspace
-          </button>
-          <button onClick={() => navigate('/app/pos?type=TAKEAWAY')} className="btn btn-kf-secondary btn-lg px-4">
-            Explore POS Demo
-          </button>
+      {/* Hero Section with Interactive 3D Cloche */}
+      <div className="container py-5 my-4">
+        <div className="row align-items-center g-5">
+          {/* Left Hero Text */}
+          <div className="col-lg-6">
+            <div
+              className="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-3 shadow-sm"
+              style={{
+                backgroundColor: 'var(--kf-orange-soft)',
+                color: 'var(--kf-orange)',
+                fontSize: '12.5px',
+                fontWeight: 600,
+              }}
+            >
+              <span
+                className="d-inline-block rounded-circle"
+                style={{ width: '8px', height: '8px', backgroundColor: 'var(--kf-orange)' }}
+              />
+              Full-Stack Semester Build &bull; Interactive 3D Platform
+            </div>
+
+            <h1 className="display-4 fw-bold mb-3" style={{ color: 'var(--kf-ink)', lineHeight: 1.15 }}>
+              Smart Culinary Operations &amp;{' '}
+              <span
+                style={{
+                  background: 'linear-gradient(135deg, #f58237 0%, #d9480f 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                }}
+              >
+                Kitchen Intelligence
+              </span>
+            </h1>
+
+            <p className="lead text-muted mb-4" style={{ fontSize: '16px', lineHeight: 1.6 }}>
+              Connect live table occupancy, preparation station queues, real-time POS ordering, and cash billing with our distinctive <strong>Kitchen Rush Predictor</strong>.
+            </p>
+
+            <div className="d-flex flex-wrap gap-3 mb-5">
+              <button
+                onClick={() => navigate('/login')}
+                className="btn btn-kf-primary btn-lg px-4 shadow"
+              >
+                Open Staff Workspace
+              </button>
+              <button
+                onClick={() => navigate('/app/pos?type=TAKEAWAY')}
+                className="btn btn-kf-secondary btn-lg px-4"
+              >
+                Launch POS Demo
+              </button>
+            </div>
+
+            {/* Quick Live Indicators */}
+            <div className="row g-3">
+              <div className="col-4">
+                <div className="kf-card kf-3d-tilt p-3 text-center border-0 shadow-sm">
+                  <h4 className="fw-bold m-0" style={{ color: 'var(--kf-orange)' }}>12</h4>
+                  <small className="text-muted" style={{ fontSize: '11px' }}>Smart Tables</small>
+                </div>
+              </div>
+              <div className="col-4">
+                <div className="kf-card kf-3d-tilt p-3 text-center border-0 shadow-sm">
+                  <h4 className="fw-bold m-0" style={{ color: 'var(--kf-success)' }}>4</h4>
+                  <small className="text-muted" style={{ fontSize: '11px' }}>Prep Stations</small>
+                </div>
+              </div>
+              <div className="col-4">
+                <div className="kf-card kf-3d-tilt p-3 text-center border-0 shadow-sm">
+                  <h4 className="fw-bold m-0 text-primary">FIFO</h4>
+                  <small className="text-muted" style={{ fontSize: '11px' }}>Rush Simulation</small>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Hero: Interactive 3D WebGL Canvas */}
+          <div className="col-lg-6 text-center">
+            <div
+              className="position-relative p-2 rounded-4 shadow-lg animate-float"
+              style={{
+                backgroundColor: 'rgba(255, 255, 255, 0.75)',
+                backdropFilter: 'blur(16px)',
+                border: '1px solid rgba(255, 255, 255, 0.8)',
+              }}
+            >
+              <div
+                className="position-absolute top-0 start-50 translate-middle-x mt-3 px-3 py-1 rounded-pill small"
+                style={{
+                  backgroundColor: 'rgba(27, 35, 48, 0.85)',
+                  color: '#fff',
+                  fontSize: '11px',
+                  zIndex: 10,
+                }}
+              >
+                ✨ Interactive 3D Cloche &bull; Move mouse to rotate
+              </div>
+              <ThreeDCanvas style={{ height: '380px' }} />
+            </div>
+          </div>
+        </div>
+
+        {/* 3D Features Showcase */}
+        <div className="mt-5 pt-5 border-top">
+          <div className="text-center mb-5">
+            <h2 className="fw-bold mb-2">Designed for High-Volume Dining</h2>
+            <p className="text-muted">A connected multi-workspace restaurant operating system</p>
+          </div>
+
+          <div className="row g-4">
+            <div className="col-md-4">
+              <div className="kf-card kf-3d-tilt h-100 p-4 border-0 shadow-sm">
+                <div
+                  className="p-3 rounded-3 d-inline-block mb-3"
+                  style={{ backgroundColor: 'var(--kf-orange-soft)' }}
+                >
+                  <Grid size={24} color="var(--kf-orange)" />
+                </div>
+                <h5 className="fw-bold mb-2">Interactive 3D Floor Plan</h5>
+                <p className="text-muted small">
+                  Switch between 2D standard view and architectural 3D isometric layout with live occupancy status for every table.
+                </p>
+              </div>
+            </div>
+
+            <div className="col-md-4">
+              <div className="kf-card kf-3d-tilt h-100 p-4 border-0 shadow-sm">
+                <div
+                  className="p-3 rounded-3 d-inline-block mb-3"
+                  style={{ backgroundColor: '#e6f6f4' }}
+                >
+                  <ChefHat size={24} color="var(--kf-success)" />
+                </div>
+                <h5 className="fw-bold mb-2">Multi-Station Kitchen KDS</h5>
+                <p className="text-muted small">
+                  Segregates burger, pizza, fryer, and beverage tickets to designated preparation stations with live elapsed timers.
+                </p>
+              </div>
+            </div>
+
+            <div className="col-md-4">
+              <div className="kf-card kf-3d-tilt h-100 p-4 border-0 shadow-sm">
+                <div
+                  className="p-3 rounded-3 d-inline-block mb-3"
+                  style={{ backgroundColor: '#e7f5ff' }}
+                >
+                  <Zap size={24} color="#1971c2" />
+                </div>
+                <h5 className="fw-bold mb-2">Kitchen Rush Predictor</h5>
+                <p className="text-muted small">
+                  Deterministic multi-slot FIFO capacity engine simulating bottlenecks and ETA clearance without altering live database records.
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

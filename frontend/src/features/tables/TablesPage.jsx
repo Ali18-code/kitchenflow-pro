@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { tablesService } from '../../services/tablesService';
 import { useAuth } from '../../app/AuthContext';
-import { Users, PlusCircle, RefreshCw, Eye, Utensils } from 'lucide-react';
+import { Users, PlusCircle, RefreshCw, Eye, Utensils, Box, Layers } from 'lucide-react';
 
 export default function TablesPage() {
   const [tables, setTables] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('ALL');
   const [refreshing, setRefreshing] = useState(false);
+  const [is3DMode, setIs3DMode] = useState(false);
 
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -65,6 +66,16 @@ export default function TablesPage() {
           </p>
         </div>
         <div className="d-flex align-items-center gap-2">
+          {/* 3D Isometric View Switcher */}
+          <button
+            onClick={() => setIs3DMode(!is3DMode)}
+            className={`btn btn-sm d-flex align-items-center gap-2 ${
+              is3DMode ? 'btn-dark shadow' : 'btn-outline-dark'
+            }`}
+          >
+            {is3DMode ? <Layers size={15} /> : <Box size={15} />}
+            {is3DMode ? '2D Flat View' : '✨ 3D Isometric View'}
+          </button>
           <button
             onClick={() => {
               setRefreshing(true);
@@ -149,28 +160,31 @@ export default function TablesPage() {
           <div className="spinner-border text-warning" role="status" />
         </div>
       ) : (
-        <div className="row g-3">
-          {filteredTables.map((t) => {
-            const isAvailable = t.status === 'AVAILABLE';
-            const isOccupied = t.status === 'OCCUPIED';
+        <div className={is3DMode ? 'isometric-stage' : ''}>
+          <div className={`row g-3 ${is3DMode ? 'isometric-grid' : ''}`}>
+            {filteredTables.map((t) => {
+              const isAvailable = t.status === 'AVAILABLE';
+              const isOccupied = t.status === 'OCCUPIED';
 
-            return (
-              <div key={t.id} className="col-md-4 col-lg-3">
-                <div
-                  className="kf-card h-100 d-flex flex-column justify-content-between position-relative"
-                  style={{
-                    borderColor: isAvailable
-                      ? '#b2e2d8'
-                      : isOccupied
-                        ? '#ffe8cc'
-                        : '#dee2e6',
-                    backgroundColor: isAvailable
-                      ? '#fbfffe'
-                      : isOccupied
-                        ? '#fffaf5'
-                        : '#f8f9fa',
-                  }}
-                >
+              return (
+                <div key={t.id} className="col-md-4 col-lg-3">
+                  <div
+                    className={`kf-card h-100 d-flex flex-column justify-content-between position-relative ${
+                      is3DMode ? 'isometric-card' : 'kf-3d-tilt'
+                    }`}
+                    style={{
+                      borderColor: isAvailable
+                        ? '#b2e2d8'
+                        : isOccupied
+                          ? '#ffe8cc'
+                          : '#dee2e6',
+                      backgroundColor: isAvailable
+                        ? '#fbfffe'
+                        : isOccupied
+                          ? '#fffaf5'
+                          : '#f8f9fa',
+                    }}
+                  >
                   <div>
                     <div className="d-flex justify-content-between align-items-start mb-2">
                       <h4 className="fw-bold m-0">{t.label}</h4>
@@ -248,6 +262,7 @@ export default function TablesPage() {
               </div>
             );
           })}
+          </div>
         </div>
       )}
     </div>

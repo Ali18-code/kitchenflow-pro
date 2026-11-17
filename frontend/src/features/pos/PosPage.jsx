@@ -271,39 +271,52 @@ export default function PosPage() {
             </div>
           </div>
 
-          {/* Dishes Cards Grid */}
+          {/* Dishes Cards Grid with 3D Depth & Real Photography */}
           <div className="row g-3">
             {menuItems.map((item) => {
+              // Default high quality food image fallback if not set
+              const defaultImg =
+                'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80';
+              const displayImg = item.imageUrl || defaultImg;
+
               return (
                 <div key={item.id} className="col-sm-6 col-md-4">
-                  <div className="kf-card h-100 d-flex flex-column justify-content-between p-3">
-                    <div>
-                      <div className="d-flex justify-content-between align-items-start mb-2">
-                        <span
-                          className="badge"
-                          style={{
-                            backgroundColor: 'var(--kf-orange-soft)',
-                            color: 'var(--kf-orange)',
-                            fontSize: '11px',
-                          }}
-                        >
-                          {item.station?.name || 'Kitchen'}
-                        </span>
-                        <small className="text-muted d-flex align-items-center gap-1">
-                          <Clock size={12} /> {item.prepMinutes}m
-                        </small>
-                      </div>
-                      <h5 className="fw-bold mb-1">{item.name}</h5>
-                      <div className="fw-bold text-success mb-3">
-                        Rs {parseFloat(item.price).toLocaleString()}
-                      </div>
+                  <div className="kf-card kf-3d-tilt h-100 d-flex flex-column justify-content-between p-0 overflow-hidden shadow-sm">
+                    {/* Food Photo with Floating 3D Badges */}
+                    <div className="food-card-img-wrapper">
+                      <img
+                        src={displayImg}
+                        alt={item.name}
+                        className="food-card-img"
+                        loading="lazy"
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = defaultImg;
+                        }}
+                      />
+                      <span className="food-card-badge shadow-sm" style={{ color: 'var(--kf-orange)' }}>
+                        {item.station?.name || 'Kitchen'}
+                      </span>
+                      <span className="food-card-time shadow-sm d-flex align-items-center gap-1">
+                        <Clock size={11} /> {item.prepMinutes}m
+                      </span>
                     </div>
-                    <button
-                      onClick={() => addToCart(item)}
-                      className="btn btn-kf-primary btn-sm w-100 d-flex align-items-center justify-content-center gap-1"
-                    >
-                      <Plus size={14} /> Add
-                    </button>
+
+                    {/* Content */}
+                    <div className="p-3 d-flex flex-column justify-content-between flex-grow-1">
+                      <div>
+                        <h5 className="fw-bold mb-1" style={{ fontSize: '15px' }}>{item.name}</h5>
+                        <div className="fw-bold text-success mb-3 fs-6">
+                          Rs {parseFloat(item.price).toLocaleString()}
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => addToCart(item)}
+                        className="btn btn-kf-primary btn-sm w-100 d-flex align-items-center justify-content-center gap-1 shadow-sm"
+                      >
+                        <Plus size={15} /> Add to Order
+                      </button>
+                    </div>
                   </div>
                 </div>
               );

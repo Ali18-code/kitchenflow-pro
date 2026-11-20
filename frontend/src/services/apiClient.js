@@ -1,6 +1,9 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api/v1';
+const API_BASE_URL =
+  import.meta.env.VITE_API_URL ||
+  import.meta.env.VITE_API_BASE_URL ||
+  'http://localhost:3000/api/v1';
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -13,7 +16,7 @@ const apiClient = axios.create({
 // Interceptor to inject JWT token
 apiClient.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('kf_token');
+    const token = localStorage.getItem('stockpilot_token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -27,9 +30,9 @@ apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && error.response.status === 401) {
-      localStorage.removeItem('kf_token');
-      localStorage.removeItem('kf_user');
-      if (window.location.pathname.startsWith('/app')) {
+      localStorage.removeItem('stockpilot_token');
+      localStorage.removeItem('stockpilot_user');
+      if (window.location.pathname.startsWith('/app') || window.location.pathname !== '/login') {
         window.location.href = '/login?expired=1';
       }
     }

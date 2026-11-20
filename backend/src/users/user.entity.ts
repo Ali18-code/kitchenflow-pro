@@ -3,19 +3,12 @@ import {
   PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
-  UpdateDateColumn,
-  ManyToMany,
-  JoinTable,
-  OneToMany,
 } from 'typeorm';
-import { PrepStation } from '../stations/station.entity';
-import { Order } from '../orders/order.entity';
 
 export enum UserRole {
-  MANAGER = 'manager',
-  WAITER = 'waiter',
-  KITCHEN = 'kitchen',
-  CASHIER = 'cashier',
+  ADMIN = 'ADMIN',
+  INVENTORY_MANAGER = 'INVENTORY_MANAGER',
+  SALES_STAFF = 'SALES_STAFF',
 }
 
 @Entity('users')
@@ -35,27 +28,13 @@ export class User {
   @Column({
     type: 'enum',
     enum: UserRole,
-    default: UserRole.WAITER,
+    default: UserRole.SALES_STAFF,
   })
   role: UserRole;
 
-  @Column({ type: 'boolean', default: true })
-  active: boolean;
+  @Column({ name: 'is_active', type: 'boolean', default: true })
+  isActive: boolean;
 
-  @ManyToMany(() => PrepStation, (station) => station.assignedStaff)
-  @JoinTable({
-    name: 'staff_stations',
-    joinColumn: { name: 'user_id', referencedColumnName: 'id' },
-    inverseJoinColumn: { name: 'station_id', referencedColumnName: 'id' },
-  })
-  stations: PrepStation[];
-
-  @OneToMany(() => Order, (order) => order.createdBy)
-  orders: Order[];
-
-  @CreateDateColumn({ name: 'created_at' })
+  @CreateDateColumn({ name: 'created_at', type: 'datetime', precision: 3 })
   createdAt: Date;
-
-  @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt: Date;
 }

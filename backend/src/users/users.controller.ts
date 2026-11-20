@@ -9,35 +9,35 @@ import {
   ParseIntPipe,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateStaffDto } from './dto/create-staff.dto';
+import { CreateUserDto, UpdateUserDto } from './dto/create-user.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRole } from './user.entity';
 
-@Controller('staff')
+@Controller('users')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
   @Get()
-  @Roles(UserRole.MANAGER)
+  @Roles(UserRole.ADMIN)
   async findAll() {
     return this.usersService.findAll();
   }
 
   @Post()
-  @Roles(UserRole.MANAGER)
-  async createStaff(@Body() dto: CreateStaffDto) {
-    return this.usersService.createStaff(dto);
+  @Roles(UserRole.ADMIN)
+  async create(@Body() dto: CreateUserDto) {
+    return this.usersService.createUser(dto);
   }
 
-  @Patch(':id/status')
-  @Roles(UserRole.MANAGER)
-  async setStatus(
+  @Patch(':id')
+  @Roles(UserRole.ADMIN)
+  async update(
     @Param('id', ParseIntPipe) id: number,
-    @Body('active') active: boolean,
+    @Body() dto: UpdateUserDto,
   ) {
-    return this.usersService.setStatus(id, active);
+    return this.usersService.updateUser(id, dto);
   }
 }

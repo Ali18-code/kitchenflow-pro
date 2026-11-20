@@ -13,13 +13,13 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: configService.get<string>('JWT_SECRET', 'kitchenflow_default_secret_key_change_me'),
+      secretOrKey: configService.get<string>('JWT_SECRET', 'stockpilot_jwt_secret_key_2026_super_secure'),
     });
   }
 
   async validate(payload: { sub: number; email: string; role: string }) {
     const user = await this.usersService.findById(payload.sub);
-    if (!user || !user.active) {
+    if (!user || !user.isActive) {
       throw new UnauthorizedException('Account inactive or no longer exists');
     }
     return {

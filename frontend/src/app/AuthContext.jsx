@@ -5,10 +5,10 @@ const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => {
-    const saved = localStorage.getItem('kf_user');
+    const saved = localStorage.getItem('stockpilot_user');
     return saved ? JSON.parse(saved) : null;
   });
-  const [token, setToken] = useState(() => localStorage.getItem('kf_token'));
+  const [token, setToken] = useState(() => localStorage.getItem('stockpilot_token'));
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -17,7 +17,7 @@ export function AuthProvider({ children }) {
         try {
           const profile = await authService.getProfile();
           setUser(profile);
-          localStorage.setItem('kf_user', JSON.stringify(profile));
+          localStorage.setItem('stockpilot_user', JSON.stringify(profile));
         } catch (err) {
           console.warn('Session expired or invalid:', err.message);
           logout();
@@ -32,16 +32,16 @@ export function AuthProvider({ children }) {
     const data = await authService.login(email, password);
     setToken(data.accessToken);
     setUser(data.user);
-    localStorage.setItem('kf_token', data.accessToken);
-    localStorage.setItem('kf_user', JSON.stringify(data.user));
+    localStorage.setItem('stockpilot_token', data.accessToken);
+    localStorage.setItem('stockpilot_user', JSON.stringify(data.user));
     return data.user;
   };
 
   const logout = () => {
     setToken(null);
     setUser(null);
-    localStorage.removeItem('kf_token');
-    localStorage.removeItem('kf_user');
+    localStorage.removeItem('stockpilot_token');
+    localStorage.removeItem('stockpilot_user');
   };
 
   return (

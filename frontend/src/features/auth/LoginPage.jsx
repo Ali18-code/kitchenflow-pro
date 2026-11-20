@@ -1,212 +1,315 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../app/AuthContext';
-import { UtensilsCrossed, Lock, Mail, AlertCircle, Eye, EyeOff, CheckCircle2 } from 'lucide-react';
+import { Package, Lock, Mail, AlertCircle, Eye, EyeOff, ShieldCheck } from 'lucide-react';
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('waiter@kitchenflow.local');
-  const [password, setPassword] = useState('Password123!');
+  const [email, setEmail] = useState('admin@stockpilot.local');
+  const [password, setPassword] = useState('Admin123!');
   const [showPass, setShowPass] = useState(false);
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
-  // Field touch tracking for clean validation
-  const [touched, setTouched] = useState({ email: false, password: false });
-
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  // Validation rules
-  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-  const isEmailValid = emailRegex.test(email.trim());
-  const isPasswordValid = password.length >= 6;
-
-  const getEmailError = () => {
-    if (!email.trim()) return 'Email address is required.';
-    if (!isEmailValid) return 'Please enter a valid email address (e.g., name@domain.com).';
-    return null;
-  };
-
-  const getPasswordError = () => {
-    if (!password) return 'Password is required.';
-    if (password.length < 6) return 'Password must be at least 6 characters.';
-    return null;
-  };
-
-  const emailError = touched.email ? getEmailError() : null;
-  const passwordError = touched.password ? getPasswordError() : null;
-  const isFormValid = isEmailValid && isPasswordValid;
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setTouched({ email: true, password: true });
-
-    if (!isFormValid) {
-      return;
-    }
+    if (!email.trim() || !password) return;
 
     setError('');
     setSubmitting(true);
     try {
       const user = await login(email.trim(), password);
-      if (user.role === 'waiter') {
-        navigate('/app/tables');
-      } else if (user.role === 'kitchen') {
-        navigate('/app/kitchen');
-      } else if (user.role === 'cashier') {
-        navigate('/app/billing');
+      if (user.role === 'SALES_STAFF') {
+        navigate('/app/sales');
       } else {
-        navigate('/app');
+        navigate('/app/dashboard');
       }
     } catch (err) {
       setError(
-        err.response?.data?.message || 'Invalid email or password. Please try again.',
+        err.response?.data?.message || 'Invalid email or password. Please verify credentials.',
       );
     } finally {
       setSubmitting(false);
     }
   };
 
-  const handleQuickLogin = (roleEmail) => {
+  const handleQuickLogin = (roleEmail, rolePass) => {
     setEmail(roleEmail);
-    setPassword('Password123!');
-    setTouched({ email: false, password: false });
+    setPassword(rolePass);
     setError('');
   };
 
   return (
     <div
-      className="d-flex align-items-center justify-content-center px-3"
-      style={{ minHeight: '100vh', backgroundColor: 'var(--kf-canvas)' }}
+      style={{
+        minHeight: '100vh',
+        backgroundColor: 'var(--sp-cloud)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '2rem 1rem',
+        fontFamily: 'var(--font-sans)',
+      }}
     >
-      <div className="kf-card shadow-sm" style={{ width: '100%', maxWidth: '440px' }}>
-        <div className="text-center mb-4">
+      <div
+        style={{
+          width: '100%',
+          maxWidth: '460px',
+          backgroundColor: '#FFFFFF',
+          borderRadius: 'var(--sp-radius-md)',
+          boxShadow: 'var(--sp-shadow-elevated)',
+          border: '1px solid var(--sp-border)',
+          overflow: 'hidden',
+        }}
+      >
+        {/* Header */}
+        <div
+          style={{
+            backgroundColor: 'var(--sp-midnight)',
+            padding: '2rem',
+            textAlign: 'center',
+            color: '#FFFFFF',
+          }}
+        >
           <div
-            className="d-inline-flex p-3 rounded-circle mb-3"
-            style={{ backgroundColor: 'var(--kf-orange-soft)' }}
+            style={{
+              width: '48px',
+              height: '48px',
+              borderRadius: 'var(--sp-radius-sm)',
+              backgroundColor: 'var(--sp-emerald)',
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginBottom: '1rem',
+            }}
           >
-            <UtensilsCrossed size={32} color="var(--kf-orange)" />
+            <Package size={26} color="#FFFFFF" />
           </div>
-          <h2 className="fw-bold mb-1">
-            KitchenFlow <span style={{ color: 'var(--kf-orange)' }}>Pro</span>
+          <h2 style={{ fontSize: '1.5rem', fontWeight: '700', margin: '0 0 0.5rem 0' }}>
+            Stock<span style={{ color: 'var(--sp-emerald)' }}>Pilot</span>
           </h2>
-          <p className="text-muted small">Modern Culinary Operations & Staff Sign In</p>
+          <p style={{ margin: 0, fontSize: '0.875rem', color: '#94A3B8' }}>
+            Intelligent Inventory, Sales & Procurement
+          </p>
         </div>
 
-        {error && (
-          <div className="alert alert-danger d-flex align-items-center gap-2 py-2 small mb-3">
-            <AlertCircle size={18} className="flex-shrink-0" />
-            <span>{error}</span>
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} noValidate>
-          {/* Email Field */}
-          <div className="mb-3">
-            <label className="form-label fw-semibold small d-flex justify-content-between">
-              <span>Work Email</span>
-              {touched.email && isEmailValid && (
-                <span className="text-success d-flex align-items-center gap-1" style={{ fontSize: '11px' }}>
-                  <CheckCircle2 size={13} /> Valid format
-                </span>
-              )}
-            </label>
-            <div className="input-group">
-              <span className={`input-group-text bg-white ${emailError ? 'border-danger' : ''}`}>
-                <Mail size={16} className={emailError ? 'text-danger' : 'text-muted'} />
-              </span>
-              <input
-                type="email"
-                className={`form-control ${emailError ? 'is-invalid' : touched.email && isEmailValid ? 'is-valid' : ''}`}
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                onBlur={() => setTouched((prev) => ({ ...prev, email: true }))}
-                placeholder="staff@kitchenflow.local"
-                required
-              />
+        {/* Form Body */}
+        <div style={{ padding: '2rem' }}>
+          {error && (
+            <div
+              style={{
+                backgroundColor: 'var(--sp-danger-bg)',
+                color: 'var(--sp-danger)',
+                border: '1px solid #FECACA',
+                borderRadius: 'var(--sp-radius-sm)',
+                padding: '0.75rem 1rem',
+                marginBottom: '1.5rem',
+                fontSize: '0.875rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+              }}
+            >
+              <AlertCircle size={18} />
+              <span>{error}</span>
             </div>
-            {emailError && (
-              <div className="text-danger mt-1 small" style={{ fontSize: '11.5px' }}>
-                {emailError}
-              </div>
-            )}
-          </div>
+          )}
 
-          {/* Password Field */}
-          <div className="mb-3">
-            <label className="form-label fw-semibold small">Password</label>
-            <div className="input-group">
-              <span className={`input-group-text bg-white ${passwordError ? 'border-danger' : ''}`}>
-                <Lock size={16} className={passwordError ? 'text-danger' : 'text-muted'} />
-              </span>
-              <input
-                type={showPass ? 'text' : 'password'}
-                className={`form-control ${passwordError ? 'is-invalid' : touched.password && isPasswordValid ? 'is-valid' : ''}`}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                onBlur={() => setTouched((prev) => ({ ...prev, password: true }))}
-                placeholder="Enter password"
-                required
-              />
+          <form onSubmit={handleSubmit}>
+            <div style={{ marginBottom: '1.25rem' }}>
+              <label
+                style={{
+                  display: 'block',
+                  fontSize: '0.875rem',
+                  fontWeight: '600',
+                  color: 'var(--sp-slate)',
+                  marginBottom: '0.5rem',
+                }}
+              >
+                Work Email
+              </label>
+              <div style={{ position: 'relative' }}>
+                <Mail
+                  size={18}
+                  style={{
+                    position: 'absolute',
+                    left: '12px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    color: 'var(--sp-slate-light)',
+                  }}
+                />
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  placeholder="name@stockpilot.local"
+                  style={{
+                    width: '100%',
+                    padding: '0.625rem 0.75rem 0.625rem 2.5rem',
+                    border: '1px solid var(--sp-border)',
+                    borderRadius: 'var(--sp-radius-sm)',
+                    fontSize: '0.9375rem',
+                    color: 'var(--sp-slate)',
+                    outline: 'none',
+                    boxSizing: 'border-box',
+                  }}
+                />
+              </div>
+            </div>
+
+            <div style={{ marginBottom: '1.5rem' }}>
+              <label
+                style={{
+                  display: 'block',
+                  fontSize: '0.875rem',
+                  fontWeight: '600',
+                  color: 'var(--sp-slate)',
+                  marginBottom: '0.5rem',
+                }}
+              >
+                Password
+              </label>
+              <div style={{ position: 'relative' }}>
+                <Lock
+                  size={18}
+                  style={{
+                    position: 'absolute',
+                    left: '12px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    color: 'var(--sp-slate-light)',
+                  }}
+                />
+                <input
+                  type={showPass ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  placeholder="••••••••"
+                  style={{
+                    width: '100%',
+                    padding: '0.625rem 2.5rem 0.625rem 2.5rem',
+                    border: '1px solid var(--sp-border)',
+                    borderRadius: 'var(--sp-radius-sm)',
+                    fontSize: '0.9375rem',
+                    color: 'var(--sp-slate)',
+                    outline: 'none',
+                    boxSizing: 'border-box',
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPass(!showPass)}
+                  style={{
+                    position: 'absolute',
+                    right: '12px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    color: 'var(--sp-slate-light)',
+                  }}
+                >
+                  {showPass ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={submitting}
+              style={{
+                width: '100%',
+                padding: '0.75rem',
+                backgroundColor: 'var(--sp-emerald)',
+                color: '#FFFFFF',
+                fontWeight: '600',
+                fontSize: '0.9375rem',
+                border: 'none',
+                borderRadius: 'var(--sp-radius-sm)',
+                cursor: submitting ? 'not-allowed' : 'pointer',
+                opacity: submitting ? 0.7 : 1,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '0.5rem',
+              }}
+            >
+              <ShieldCheck size={18} />
+              {submitting ? 'Authenticating...' : 'Sign In to Workspace'}
+            </button>
+          </form>
+
+          {/* Demo Quick-Login Accounts */}
+          <div style={{ marginTop: '2rem', borderTop: '1px solid var(--sp-border)', paddingTop: '1.25rem' }}>
+            <p
+              style={{
+                fontSize: '0.75rem',
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em',
+                color: 'var(--sp-slate-light)',
+                fontWeight: '600',
+                marginBottom: '0.75rem',
+                textAlign: 'center',
+              }}
+            >
+              Quick Demo Accounts
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.5rem' }}>
               <button
                 type="button"
-                className="btn btn-outline-secondary"
-                onClick={() => setShowPass(!showPass)}
-                tabIndex="-1"
+                onClick={() => handleQuickLogin('admin@stockpilot.local', 'Admin123!')}
+                style={{
+                  padding: '0.5rem',
+                  fontSize: '0.75rem',
+                  fontWeight: '600',
+                  color: 'var(--sp-slate)',
+                  backgroundColor: 'var(--sp-cloud)',
+                  border: '1px solid var(--sp-border)',
+                  borderRadius: 'var(--sp-radius-sm)',
+                  cursor: 'pointer',
+                }}
               >
-                {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
+                👑 Admin
+              </button>
+              <button
+                type="button"
+                onClick={() => handleQuickLogin('manager@stockpilot.local', 'Manager123!')}
+                style={{
+                  padding: '0.5rem',
+                  fontSize: '0.75rem',
+                  fontWeight: '600',
+                  color: 'var(--sp-slate)',
+                  backgroundColor: 'var(--sp-cloud)',
+                  border: '1px solid var(--sp-border)',
+                  borderRadius: 'var(--sp-radius-sm)',
+                  cursor: 'pointer',
+                }}
+              >
+                📦 Manager
+              </button>
+              <button
+                type="button"
+                onClick={() => handleQuickLogin('sales@stockpilot.local', 'Sales123!')}
+                style={{
+                  padding: '0.5rem',
+                  fontSize: '0.75rem',
+                  fontWeight: '600',
+                  color: 'var(--sp-slate)',
+                  backgroundColor: 'var(--sp-cloud)',
+                  border: '1px solid var(--sp-border)',
+                  borderRadius: 'var(--sp-radius-sm)',
+                  cursor: 'pointer',
+                }}
+              >
+                💳 Sales
               </button>
             </div>
-            {passwordError && (
-              <div className="text-danger mt-1 small" style={{ fontSize: '11.5px' }}>
-                {passwordError}
-              </div>
-            )}
-          </div>
-
-          <button
-            type="submit"
-            className="btn btn-kf-primary w-100 py-2 mb-3 fw-semibold"
-            disabled={submitting}
-          >
-            {submitting ? 'Authenticating...' : 'Sign In to Workspace'}
-          </button>
-        </form>
-
-        {/* Quick Demo Profiles */}
-        <div className="border-top pt-3 mt-2 text-center">
-          <small className="text-muted fw-bold d-block mb-2 text-uppercase" style={{ fontSize: '11px' }}>
-            Quick Demo Logins
-          </small>
-          <div className="d-flex flex-wrap gap-1 justify-content-center">
-            <button
-              type="button"
-              className="btn btn-sm btn-outline-secondary"
-              onClick={() => handleQuickLogin('manager@kitchenflow.local')}
-            >
-              Manager
-            </button>
-            <button
-              type="button"
-              className="btn btn-sm btn-outline-secondary"
-              onClick={() => handleQuickLogin('waiter@kitchenflow.local')}
-            >
-              Waiter
-            </button>
-            <button
-              type="button"
-              className="btn btn-sm btn-outline-secondary"
-              onClick={() => handleQuickLogin('kitchen@kitchenflow.local')}
-            >
-              Kitchen
-            </button>
-            <button
-              type="button"
-              className="btn btn-sm btn-outline-secondary"
-              onClick={() => handleQuickLogin('cashier@kitchenflow.local')}
-            >
-              Cashier
-            </button>
           </div>
         </div>
       </div>

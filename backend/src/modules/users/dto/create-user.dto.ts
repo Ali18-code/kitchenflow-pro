@@ -3,6 +3,7 @@ import {
   IsEmail,
   IsEnum,
   MinLength,
+  Matches,
   IsOptional,
   IsBoolean,
 } from 'class-validator';
@@ -20,7 +21,14 @@ export class CreateUserDto {
   role: UserRole;
 
   @IsString()
-  @MinLength(6, { message: 'Password must be at least 6 characters' })
+  @MinLength(8, { message: 'Password must be at least 8 characters long' })
+  @Matches(
+    /((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/,
+    {
+      message:
+        'Password must contain an uppercase letter, a lowercase letter, and at least one number or symbol',
+    },
+  )
   password: string;
 }
 

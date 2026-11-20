@@ -1,7 +1,17 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../app/AuthContext';
-import { Package, Lock, Mail, AlertCircle, Eye, EyeOff, ShieldCheck } from 'lucide-react';
+import PasswordStrengthMeter from '../../components/PasswordStrengthMeter';
+import {
+  Package,
+  Lock,
+  Mail,
+  AlertCircle,
+  Eye,
+  EyeOff,
+  ShieldCheck,
+  CheckCircle2,
+} from 'lucide-react';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('admin@stockpilot.local');
@@ -10,12 +20,40 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
+  // Field touch states for clean UX validation
+  const [touched, setTouched] = useState({ email: false, password: false });
+
   const { login } = useAuth();
   const navigate = useNavigate();
 
+  // Real-time validation rules
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  const isEmailValid = emailRegex.test(email.trim());
+  const isPasswordValid = password.length >= 6;
+
+  const getEmailError = () => {
+    if (!email.trim()) return 'Email address is required.';
+    if (!isEmailValid) return 'Please enter a valid work email address.';
+    return null;
+  };
+
+  const getPasswordError = () => {
+    if (!password) return 'Password is required.';
+    if (!isPasswordValid) return 'Password must be at least 6 characters.';
+    return null;
+  };
+
+  const emailError = touched.email ? getEmailError() : null;
+  const passwordError = touched.password ? getPasswordError() : null;
+  const isFormValid = isEmailValid && isPasswordValid;
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!email.trim() || !password) return;
+    setTouched({ email: true, password: true });
+
+    if (!isFormValid) {
+      return;
+    }
 
     setError('');
     setSubmitting(true);
@@ -38,6 +76,7 @@ export default function LoginPage() {
   const handleQuickLogin = (roleEmail, rolePass) => {
     setEmail(roleEmail);
     setPassword(rolePass);
+    setTouched({ email: true, password: true });
     setError('');
   };
 
@@ -63,7 +102,7 @@ export default function LoginPage() {
           overflow: 'hidden',
         }}
       >
-        {/* Header */}
+        {/* Brand Header */}
         <div
           style={{
             backgroundColor: 'var(--sp-midnight)',
@@ -116,19 +155,25 @@ export default function LoginPage() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} noValidate>
+            {/* Email Field with Live Validation */}
             <div style={{ marginBottom: '1.25rem' }}>
-              <label
-                style={{
-                  display: 'block',
-                  fontSize: '0.875rem',
-                  fontWeight: '600',
-                  color: 'var(--sp-slate)',
-                  marginBottom: '0.5rem',
-                }}
-              >
-                Work Email
-              </label>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.375rem' }}>
+                <label
+                  style={{
+                    fontSize: '0.875rem',
+                    fontWeight: '600',
+                    color: 'var(--sp-slate)',
+                  }}
+                >
+                  Work Email
+                </label>
+                {emailError && (
+                  <span style={{ fontSize: '0.75rem', color: 'var(--sp-danger)', fontWeight: '600' }}>
+                    {emailError}
+                  </span>
+                )}
+              </div>
               <div style={{ position: 'relative' }}>
                 <Mail
                   size={18}
@@ -137,41 +182,49 @@ export default function LoginPage() {
                     left: '12px',
                     top: '50%',
                     transform: 'translateY(-50%)',
-                    color: 'var(--sp-slate-light)',
+                    color: emailError ? 'var(--sp-danger)' : 'var(--sp-slate-light)',
                   }}
                 />
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  onBlur={() => setTouched((prev) => ({ ...prev, email: true }))}
                   required
                   placeholder="name@stockpilot.local"
                   style={{
                     width: '100%',
                     padding: '0.625rem 0.75rem 0.625rem 2.5rem',
-                    border: '1px solid var(--sp-border)',
+                    border: `1px solid ${emailError ? 'var(--sp-danger)' : 'var(--sp-border)'}`,
                     borderRadius: 'var(--sp-radius-sm)',
                     fontSize: '0.9375rem',
                     color: 'var(--sp-slate)',
                     outline: 'none',
                     boxSizing: 'border-box',
+                    backgroundColor: emailError ? '#FFFBFB' : '#FFFFFF',
                   }}
                 />
               </div>
             </div>
 
-            <div style={{ marginBottom: '1.5rem' }}>
-              <label
-                style={{
-                  display: 'block',
-                  fontSize: '0.875rem',
-                  fontWeight: '600',
-                  color: 'var(--sp-slate)',
-                  marginBottom: '0.5rem',
-                }}
-              >
-                Password
-              </label>
+            {/* Password Field with Live Validation & Strength Meter */}
+            <div style={{ marginBottom: '1.25rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.375rem' }}>
+                <label
+                  style={{
+                    fontSize: '0.875rem',
+                    fontWeight: '600',
+                    color: 'var(--sp-slate)',
+                  }}
+                >
+                  Password
+                </label>
+                {passwordError && (
+                  <span style={{ fontSize: '0.75rem', color: 'var(--sp-danger)', fontWeight: '600' }}>
+                    {passwordError}
+                  </span>
+                )}
+              </div>
               <div style={{ position: 'relative' }}>
                 <Lock
                   size={18}
@@ -180,24 +233,26 @@ export default function LoginPage() {
                     left: '12px',
                     top: '50%',
                     transform: 'translateY(-50%)',
-                    color: 'var(--sp-slate-light)',
+                    color: passwordError ? 'var(--sp-danger)' : 'var(--sp-slate-light)',
                   }}
                 />
                 <input
                   type={showPass ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  onBlur={() => setTouched((prev) => ({ ...prev, password: true }))}
                   required
                   placeholder="••••••••"
                   style={{
                     width: '100%',
                     padding: '0.625rem 2.5rem 0.625rem 2.5rem',
-                    border: '1px solid var(--sp-border)',
+                    border: `1px solid ${passwordError ? 'var(--sp-danger)' : 'var(--sp-border)'}`,
                     borderRadius: 'var(--sp-radius-sm)',
                     fontSize: '0.9375rem',
                     color: 'var(--sp-slate)',
                     outline: 'none',
                     boxSizing: 'border-box',
+                    backgroundColor: passwordError ? '#FFFBFB' : '#FFFFFF',
                   }}
                 />
                 <button
@@ -217,6 +272,9 @@ export default function LoginPage() {
                   {showPass ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
+
+              {/* Live Password Strength Meter */}
+              <PasswordStrengthMeter password={password} showCriteria={false} />
             </div>
 
             <button
@@ -244,8 +302,8 @@ export default function LoginPage() {
             </button>
           </form>
 
-          {/* Quick Demo Accounts */}
-          <div style={{ marginTop: '2rem', borderTop: '1px solid var(--sp-border)', paddingTop: '1.25rem' }}>
+          {/* Demo Quick-Login Accounts */}
+          <div style={{ marginTop: '1.75rem', borderTop: '1px solid var(--sp-border)', paddingTop: '1.25rem' }}>
             <p
               style={{
                 fontSize: '0.75rem',

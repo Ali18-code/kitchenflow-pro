@@ -13,7 +13,7 @@
     "start:prod": "node dist/main",
     "typeorm": "typeorm-ts-node-commonjs",
     "migration:run": "typeorm-ts-node-commonjs migration:run -d src/database/data-source.ts",
-    "seed": "ts-node -r tsconfig-paths/register src/seeds/seed.ts"
+    "seed": "ts-node -r tsconfig-paths/register src/database/seed/seed.ts"
   },
   "dependencies": {
     "@nestjs/common": "^10.3.7",

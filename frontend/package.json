@@ -1,7 +1,8 @@
 {
-  "name": "kitchenflow-frontend",
+  "name": "stockpilot-frontend",
   "private": true,
   "version": "1.0.0",
+  "description": "StockPilot - Intelligent inventory, sales and procurement web client",
   "type": "module",
   "scripts": {
     "dev": "vite",

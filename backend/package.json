@@ -1,7 +1,7 @@
 {
-  "name": "kitchenflow-backend",
+  "name": "stockpilot-backend",
   "version": "1.0.0",
-  "description": "KitchenFlow Pro - Restaurant operations, intelligence and kitchen management platform",
+  "description": "StockPilot - Intelligent inventory, sales and procurement REST API",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
